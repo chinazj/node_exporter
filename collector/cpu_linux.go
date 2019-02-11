@@ -206,6 +206,9 @@ func (c *cpuCollector) updateStat(ch chan<- prometheus.Metric) error {
 		ch <- prometheus.MustNewConstMetric(c.cpu, prometheus.CounterValue, cpuStat.Steal, cpuName, "steal")
 		ch <- prometheus.MustNewConstMetric(c.cpu, prometheus.CounterValue, cpuStat.Guest, cpuName, "guest")
 		ch <- prometheus.MustNewConstMetric(c.cpu, prometheus.CounterValue, cpuStat.GuestNice, cpuName, "guest_nice")
+		ch <- prometheus.MustNewConstMetric(c.cpu, prometheus.CounterValue,
+			cpuStat.User + cpuStat.Nice + cpuStat.System + cpuStat.Iowait + cpuStat.IRQ + cpuStat.SoftIRQ + cpuStat.Steal + cpuStat.Guest + cpuStat.GuestNice,
+			cpuName, "busy")
 	}
 
 	return nil
