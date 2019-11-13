@@ -170,7 +170,10 @@ func (c *cpuCollector) updateStat(ch chan<- prometheus.Metric) error {
 		ch <- prometheus.MustNewConstMetric(c.cpu, prometheus.CounterValue, cpuStat.IRQ, cpuNum, "irq")
 		ch <- prometheus.MustNewConstMetric(c.cpu, prometheus.CounterValue, cpuStat.SoftIRQ, cpuNum, "softirq")
 		ch <- prometheus.MustNewConstMetric(c.cpu, prometheus.CounterValue, cpuStat.Steal, cpuNum, "steal")
-
+		// Sometimes in cloud vm env, the cpu utilization is negative if it's calculated by PromQL like '1 - avg(irate(node_cpu_seconds_total{job="node-exporter",mode="idle"}[5m]))', so add a new cpu metrics called 'used' and calculate cpu utilization by 'avg(irate(node_cpu_seconds_total{job="node-exporter",mode="used"}[5m]))' instead.
+		ch <- prometheus.MustNewConstMetric(c.cpu, prometheus.CounterValue,
+			cpuStat.User+cpuStat.Nice+cpuStat.System+cpuStat.Iowait+cpuStat.IRQ+cpuStat.SoftIRQ+cpuStat.Steal,
+			cpuNum, "used")
 		// Guest CPU is also accounted for in cpuStat.User and cpuStat.Nice, expose these as separate metrics.
 		ch <- prometheus.MustNewConstMetric(c.cpuGuest, prometheus.CounterValue, cpuStat.Guest, cpuNum, "user")
 		ch <- prometheus.MustNewConstMetric(c.cpuGuest, prometheus.CounterValue, cpuStat.GuestNice, cpuNum, "nice")
