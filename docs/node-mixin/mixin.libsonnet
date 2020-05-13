@@ -1,4 +1,3 @@
 (import 'config.libsonnet') +
-(import 'alerts/alerts.libsonnet') +
-(import 'dashboards/dashboards.libsonnet') +
-(import 'rules/rules.libsonnet')
+(import 'alerts/kubesphere-alerts.libsonnet') +
+(import 'dashboards/kubesphere-dashboards.libsonnet')
